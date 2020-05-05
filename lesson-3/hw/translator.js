@@ -25,7 +25,8 @@ const lang = 'en-ru';
 translator = (word) => {
     request(yandexTranslatorUrl + 'key=' + key + 'text=' + word + '&' + 'lang=' + lang, (err, res, body) => {
         if(!err && res.statusCode === 200) {
-            console.log(body);
+            const result = JSON.parse(body);
+            console.log(result.text);
         }
     });
 };
