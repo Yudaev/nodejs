@@ -6,12 +6,19 @@
 информационной подборки (например, количество отображаемых
 новостей или их категорию) и получить ее в удобном виде. Форма
 должна отправляться на сервер методом POST.
+
+Реализовать запоминание с помощью cookie текущих настроек
+формы и при заходе на сайт показывать последние использованные
+настройки. Если cookie не существует, можно при отображении
+формы дополнительно учитывать передаваемые GET-запросы
+(например, ?count=10&lang=ru и т.д.)
 */
 const cheerio = require('cheerio');
 const express = require('express');
 const consolidate = require('consolidate');
 const path = require('path');
 const axios = require('axios');
+const cookieParser = require('cookie-parser')
 
 const app = express();
 
@@ -21,6 +28,7 @@ app.set('views', path.resolve(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(cookieParser());
 
 getNews = (count) => axios.get('https://rbc.ru/')
     .then(({data}) => {
@@ -39,12 +47,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/news/', async (req, res) => {
-    const news = {list: await getNews()}
+    const count = req.cookies.count === '' ? null : req.cookies.count;
+    const news = {list: await getNews(count), count: count};
     res.render('news', news);
 });
 
 app.post('/news/', async (req, res) => {
-    const news = {list: await getNews(req.body.count), count: req.body.count}
+    const news = {list: await getNews(req.body.count), count: req.body.count};
     res.render('news', news);
 });
 
