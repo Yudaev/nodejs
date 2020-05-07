@@ -25,9 +25,9 @@ const users = {
 };
 
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: true}));
 app.use((req, res, next) => {
-    console.log(req.headers);
+    //console.log(req.headers);
     if(req.headers.sample === 'value'){
         req.sample = 'Hello';
     }
@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/users', (req, res, next) => {
-    console.log('middleware2');
+    //console.log('middleware2');
     next();
 });
 
@@ -45,13 +45,14 @@ app.all('/users', (req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    console.log(req.query);
-    res.send('Hello');
+    //console.log(req.query);
+    res.send('Hello111');
 });
 
 app.get('/users/:username', (req, res) => {
     const user = users[req.params.username]
-    console.log(req.params);
+    console.log(req.params.username);
+    console.log(user);
     res.render('user', user);
 });
 
